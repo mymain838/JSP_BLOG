@@ -1,6 +1,6 @@
 package blog.domain.board;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +17,10 @@ public class Board {
 	private int userId;
 	private String title;
 	private String content;
-	private String readCount;
+	private int readCount;
 	private Timestamp createDate;
+
+	public String getTitle() {
+		return title.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	}
 }
