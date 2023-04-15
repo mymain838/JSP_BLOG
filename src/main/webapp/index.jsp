@@ -3,6 +3,7 @@
 
     
     <%
+    
     response.sendRedirect("board/list.jsp");
     
     %>

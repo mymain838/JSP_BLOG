@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import blog.config.DB;
 import blog.domain.user.dto.JoinReqDto;
+import blog.domain.user.dto.LoginReqDto;
 
 public class UserDao {
 
@@ -58,5 +59,38 @@ public class UserDao {
 	public void finByid() { // 회원정보보기
 
 	}
+
+	public User findByUsernameAndPassword(LoginReqDto dto) {
+		String sql = "SELECT id,username,email,address FROM user WHERE username = ? And password =?";
+		Connection conn = DB.getConnection();
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dto.getUsername());
+			pstmt.setString(2, dto.getPassword());
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				User user = User.builder()
+						.id(rs.getInt("id"))
+						.username(rs.getString("username"))
+						.email(rs.getString("email"))
+						.address(rs.getString("address"))
+						.build();
+				return user;
+				
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			
+			DB.close(conn, pstmt, rs);
+			
+		}
+		return null;
+
+	}
+	
 
 }
