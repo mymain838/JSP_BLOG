@@ -19,7 +19,7 @@ public class Board {
 	private String content;
 	private int readCount;
 	private Timestamp createDate;
-
+	//스크립트 방어 코드
 	public String getTitle() {
 		return title.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
