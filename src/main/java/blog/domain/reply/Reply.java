@@ -1,6 +1,6 @@
 package blog.domain.reply;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Reply {
 	
 	private int id;
-	private int userid;
+	private int userId;
 	private int boardId;
 	private String content;
 	private Timestamp createDate;

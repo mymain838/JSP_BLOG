@@ -11,8 +11,29 @@ var replyItem = `<li id="reply-${data.id}" class="media">`;
 	$("#reply__list").prepend(replyItem);
 }
 
+function deleteReply(id){
+	
+	alert("댓글 아이디: :" + id);
+	
+	$.ajax({
+		type: "post",
+		url: "/blog/reply?cmd=delete&id="+id,
+		dataType: "json"
+	}).done(function(result) {
+		if (result.statusCode == 1) {
+			alert('성공');
+			$("#reply-"+id).remove();
+			//location.reload(); 페이지 리로드 (다시 그려줌)
+			
+		} else {
+			alert('댓글삭제 실패');
+		}
+	});
+}
+
 function replySave(userId, boardId) {
-	alert(userId);
+	
+	
 	var data = {
 		userId : userId,
 		boardId : boardId,
@@ -28,8 +49,8 @@ function replySave(userId, boardId) {
 		dataType: "json"
 	}).done(function(result) {
 		if (result.statusCode == 1) {
-			alert('성공');
-			addReply(data);
+			addReply(result.data);
+			$("#content").val("");
 		} else {
 			alert('댓글쓰기 실패');
 		}

@@ -3,6 +3,7 @@ package blog.web;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -20,8 +21,10 @@ import blog.domain.board.dto.CommonRespDto;
 import blog.domain.board.dto.DetailRespDto;
 import blog.domain.board.dto.SaveReqDto;
 import blog.domain.board.dto.UpdateReqDto;
+import blog.domain.reply.Reply;
 import blog.domain.user.User;
 import blog.service.BoardService;
+import blog.service.ReplyService;
 import blog.service.UserService;
 import blog.util.Script;
 
@@ -49,6 +52,7 @@ public class BoardController extends HttpServlet {
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String cmd = request.getParameter("cmd");
 		BoardService boardService = new BoardService();
+		ReplyService replyService = new ReplyService();
 		HttpSession session = request.getSession();
 		
 		if(cmd.equals("saveForm")) {
@@ -95,10 +99,12 @@ public class BoardController extends HttpServlet {
 		}else if(cmd.equals("detail")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			DetailRespDto dto = boardService.글상세보기(id);
+			List<Reply> replys = replyService.글목록보기(id);
 			if(dto==null) {
 				Script.back(response, "글 상세보기에 실패하였습니다.");
 			}else {
 				request.setAttribute("dto", dto);
+				request.setAttribute("replys", replys); 
 				System.out.println(dto);
 				RequestDispatcher dis = request
 						.getRequestDispatcher("board/detail.jsp");
@@ -146,6 +152,23 @@ public class BoardController extends HttpServlet {
 				Script.back(response, "글 수정에 실패하였습니다.");
 			}
 			
+		}else if(cmd.equals("search")) {
+			String keyword = request.getParameter("keyword");
+			int page = Integer.parseInt(request.getParameter("page"));
+			List<Board> boards = boardService.글검색(keyword, page); //dto 없이 바로넘김
+			request.setAttribute("boards", boards);
+			
+			int boardCount=boardService.글개수(keyword);
+			
+			int lastPage = (boardCount-1)/4;
+			double currentPosition= (double)page/(lastPage)*100;
+
+			System.out.println(currentPosition);
+			request.setAttribute("lastpage",lastPage);
+			request.setAttribute("currentPosition", currentPosition);
+			RequestDispatcher dis = request
+					.getRequestDispatcher("board/list.jsp");
+			dis.forward(request, response);
 		}
 	}
 

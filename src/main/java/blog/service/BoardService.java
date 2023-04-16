@@ -19,6 +19,11 @@ public class BoardService {
 		
 		return boardDao.count();
 	}
+	//오버로드
+	public int 글개수(String keyword) {
+	
+		return boardDao.count(keyword);
+	}
 
 	public int 글쓰기(SaveReqDto dto) {
 		
@@ -48,6 +53,12 @@ public class BoardService {
 	public int 글수정(UpdateReqDto dto) {
 		return boardDao.update(dto);
 	}
+	public List<Board> 글검색(String keyword, int page){
+		return boardDao.findByKeyword(keyword, page);
+		
+		
+	}
+
 
 
 }

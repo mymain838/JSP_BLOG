@@ -88,6 +88,28 @@ public class BoardDao {
 		}
 		return -1;
 	}
+	//오버로딩
+	public int count(String keyword) {
+		String sql = "SELECT count(*) FROM board WHERE title like ?";
+		
+		Connection conn = DB.getConnection();
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		List<Board> boards = new ArrayList<>();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, "%"+keyword+"%");
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return rs.getInt(1);
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+		}finally {
+			DB.close(conn, pstmt, rs);
+		}
+		return -1;
+	}
 	public DetailRespDto findById(int id){
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT b.id,b.title,b.content,b.readCount,b.userId,u.username ");
@@ -175,6 +197,39 @@ public class BoardDao {
 		}
 		return -1;
 		
+	}
+	public List<Board> findByKeyword(String keyword, int page){
+		String sql = "SELECT * FROM board WHERE title LIKE ? ORDER BY id DESC LIMIT ?, 4";
+		Connection conn = DB.getConnection();
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		List<Board> boards = new ArrayList<>();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, "%"+keyword+"%");
+			pstmt.setInt(2, page*4); //0-> 0 1->4 2->8
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				Board board = Board.builder()
+						.id(rs.getInt("id"))
+						.userId(rs.getInt("userId"))
+						.title(rs.getString("title"))
+						.content(rs.getString("content"))
+						.readCount(rs.getInt("readCount"))
+						.createDate(rs.getTimestamp("createDate"))
+						.build();
+				boards.add(board);
+			}
+			return boards;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			
+			DB.close(conn, pstmt, rs);
+			
+		}
+		return null;
 	}
 	
 	
